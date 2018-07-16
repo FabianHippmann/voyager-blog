@@ -33,7 +33,6 @@ class PostController extends VoyagerBaseController
             ])->whereDate('published_date', '<=', Carbon::now())
             ->orderBy('created_at', 'desc')
             ->paginate(12);
-
         return view("{$this->viewPath}::modules/posts/posts", [
             'featuredPost' => $featuredPost,
             'posts' => $posts,
@@ -55,7 +54,6 @@ class PostController extends VoyagerBaseController
                 ['status', '=', 'PUBLISHED'],
             ])->whereDate('published_date', '<=', Carbon::now())
             ->firstOrFail();
-
         // Related posts (based on tags)
         $relatedPosts = array();
         if (!empty(trim($post->tags))) {

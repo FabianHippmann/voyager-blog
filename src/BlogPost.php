@@ -16,7 +16,7 @@ class BlogPost extends Model
         Resizable,
         HasRelationships;
 
-    protected $translatable = ['title', 'seo_title', 'excerpt', 'body', 'slug', 'meta_description', 'meta_keywords'];
+    protected $translatable = ['title', 'excerpt', 'body', 'slug', 'meta_description'];
 
     const PUBLISHED = 'PUBLISHED';
 
