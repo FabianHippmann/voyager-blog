@@ -13,7 +13,7 @@ class PivotalRemoveKeywordsField extends Migration
      */
     public function up()
     {
-        if (Schema::hasTable('blog_posts')) {
+        if (Schema::hasTable('blog_posts') && Schema::hasColumn('blog_posts', 'meta_keywords')) {
             Schema::table('blog_posts', function (Blueprint $table) {
                 $table->dropColumn('meta_keywords');
             });
