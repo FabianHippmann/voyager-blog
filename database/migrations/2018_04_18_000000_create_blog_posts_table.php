@@ -3,17 +3,16 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use DB;
 
 class CreateBlogPostsTable extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
     public function up()
     {
-        if (!Schema::hasTable('blog_posts')) {
+        if (! Schema::hasTable('blog_posts')) {
             Schema::create('blog_posts', function (Blueprint $table) {
                 $table->increments('id');
                 $table->integer('author_id');
@@ -32,13 +31,12 @@ class CreateBlogPostsTable extends Migration
                 $table->text('tags')->nullable()->default(null);
                 $table->timestamp('published_date')->nullable()->default(null)->useCurrent = true;
             });
+            DB::statement('ALTER TABLE blog_posts ADD FULLTEXT fulltext_index (title, body)');
         }
     }
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
     public function down()
     {
