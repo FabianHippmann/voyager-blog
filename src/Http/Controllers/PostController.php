@@ -2,11 +2,14 @@
 
 namespace Pvtl\VoyagerBlog\Http\Controllers;
 
-use Pvtl\VoyagerBlog\BlogPost;
+use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Pvtl\VoyagerBlog\BlogPost;
+use Pvtl\VoyagerBlog\Http\Controllers\Controller;
 use TCG\Voyager\Http\Controllers\VoyagerBaseController;
+use Pvtl\VoyagerBlog\Http\Resources\BlogPost as BlogPostResource;
 
-class PostController extends VoyagerBaseController
+class PostController extends Controller
 {
     protected $viewPath = 'voyager-blog';
 
@@ -15,7 +18,7 @@ class PostController extends VoyagerBaseController
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getPosts()
+    public function getPosts(Request $request)
     {
         // Get featured post
         $featuredPost = BlogPost::where([
@@ -33,10 +36,12 @@ class PostController extends VoyagerBaseController
             ])->whereDate('published_date', '<=', Carbon::now())
             ->orderBy('created_at', 'desc')
             ->paginate(12);
-        return view("{$this->viewPath}::modules/posts/posts", [
+        return $this->makeResponse($request, "{$this->viewPath}::modules/posts/posts", [
             'featuredPost' => $featuredPost,
             'posts' => $posts,
-        ]);
+        ], BlogPostResource::collection($posts->load('authorId'))->additional(['meta' => [
+            'featuredPost' => ($featuredPost) ? new BlogPostResource($featuredPost): [],
+        ]]));
     }
 
     /**
@@ -46,7 +51,7 @@ class PostController extends VoyagerBaseController
      *
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function getPost($slug)
+    public function getPost(Request $request, $slug)
     {
         // The post
         $post = BlogPost::where([
@@ -55,8 +60,8 @@ class PostController extends VoyagerBaseController
             ])->whereDate('published_date', '<=', Carbon::now())
             ->firstOrFail();
         // Related posts (based on tags)
-        $relatedPosts = array();
-        if (!empty(trim($post->tags))) {
+        $relatedPosts = [];
+        if (! empty(trim($post->tags))) {
             $tags = explode(',', $post->tags);
             $relatedPosts = BlogPost::where([
                     ['id', '!=', $post->id],
@@ -69,9 +74,11 @@ class PostController extends VoyagerBaseController
                 ->get();
         }
 
-        return view("{$this->viewPath}::modules/posts/post", [
+        return $this->makeResponse($request, "{$this->viewPath}::modules/posts/post", [
             'post' => $post,
             'relatedPosts' => $relatedPosts,
-        ]);
+        ], (new BlogPostResource($post->load('authorId')))->additional(['meta' => [
+            'relatedPosts' => ($relatedPosts) ? BlogPostResource::collection($relatedPosts): [],
+        ]]));
     }
 }
