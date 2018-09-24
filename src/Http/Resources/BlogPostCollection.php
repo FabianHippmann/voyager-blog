@@ -4,7 +4,7 @@ namespace Pvtl\VoyagerBlog\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class BlogPost extends JsonResource
+class BlogPostCollection extends JsonResource
 {
     /**
      * Transform the resource into an array.
