@@ -78,7 +78,7 @@ class PostController extends Controller
             'post' => $post,
             'relatedPosts' => $relatedPosts,
         ], (new BlogPostResource($post->load('authorId')))->additional(['meta' => [
-            'relatedPosts' => ($relatedPosts) ? BlogPostResource::collection($relatedPosts): [],
+            'relatedPosts' => ($relatedPosts) ? BlogPostResource::collection($relatedPosts->load('authorId')): [],
         ]]));
     }
 }
